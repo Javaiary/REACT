@@ -54,6 +54,28 @@ function Create(props) {
   </article>
 }
 
+function Update(props){
+  const [title, setTitle] = useState(props.title);
+  const [body, setBody] = useState(props.body);
+  return <article>
+  <h2>Update</h2>
+  <form onSubmit={e=>{
+    e.preventDefault();
+    const title = e.target.title.value;
+    const body = e.target.body.value;
+    props.onUpdate(title, body);
+  }}>
+    <p><input type="text" name="title" placeholder='title' value={title} onChange={event => {
+      setTitle(event.target.value);
+    }}/></p>
+    <p><textarea name="body" placeholder='body' value={body} onChange={event => {
+      setBody(event.target.value);
+    }}></textarea></p>
+    <p><input type="submit" value="Update"></input></p>
+  </form>
+</article>
+}
+
 function App() {
   // const _mode = useState('Hello');
   // const mode = _mode[0];
@@ -68,9 +90,17 @@ function App() {
     {id:3 , title:'rebecca', body:'ilsa'}
   ]);
   let content = null;
+  let contextControl = null;
+
   if (mode === 'HELLO') {
       content = <Article first="Tom" last="cruise"></Article>
   }else if(mode === 'READ'){
+    contextControl=<li>
+    <a href={'/update/'+id} onClick={e => {
+      e.preventDefault();
+      setMode('UPDATE');
+    }}>Update</a>
+  </li>;
     let first, last = null;  
     for (let i = 0; i < topics.length; i++){
       console.log(topics[i].id, id);
@@ -93,6 +123,27 @@ function App() {
         setId(nextId);
         setNextId(nextId+1);
       }}></Create>
+  }else if (mode === 'UPDATE') {
+    let first, last = null;  
+    for (let i = 0; i < topics.length; i++){
+        if (topics[i].id === id) {
+          first = topics[i].title;
+          last = topics[i].body;
+        }
+      }
+    content = <Update title={first} body={last} onUpdate={(title, body) =>{
+      const newTopics = [...topics];
+      const updatedTopic = {id:id, title:title, body:body};
+      for(let i =0; i <newTopics.length; i++){
+        if(newTopics[i].id === id){
+          newTopics[i] = updatedTopic;
+          break;
+        }
+      }
+
+      setTopics(newTopics);
+      setMode('READ');
+    }}></Update>
   }
  
   return (
@@ -102,15 +153,20 @@ function App() {
         setMode('HELLO');        
       }}></Header>
       <Nav topics={topics} onChangeMode={(_id) => {
-        alert(id);
+        alert(_id);
         setMode('READ');
         setId(_id); 
       }}></Nav>
         {content}
-        <a href="/create" onClick={e => {
-          e.preventDefault();
-          setMode('CREATE');
-        }}>Create</a>
+        <ul>
+          <li>
+            <a href="/create" onClick={e => {
+              e.preventDefault();
+              setMode('CREATE');
+            }}>Create</a>
+          </li>
+          {contextControl}
+        </ul>
     </div>
   );
 }
