@@ -95,12 +95,24 @@ function App() {
   if (mode === 'HELLO') {
       content = <Article first="Tom" last="cruise"></Article>
   }else if(mode === 'READ'){
-    contextControl=<li>
-    <a href={'/update/'+id} onClick={e => {
-      e.preventDefault();
-      setMode('UPDATE');
-    }}>Update</a>
-  </li>;
+    contextControl = <>
+    <li>
+      <a href={'/update/'+id} onClick={e => {
+        e.preventDefault();
+        setMode('UPDATE');
+      }}>Update</a>
+    </li>
+    <li><input  type="button" value="Delete" onClick={() =>{
+      const newTopics = [];
+      for (let i = 0; i < topics.length; i++) {
+        if (topics[i].id !== id) {
+          newTopics.push(topics[i]);
+        }
+      }
+      setTopics(newTopics);
+      setMode('HELLO');
+    }}/></li> </>
+
     let first, last = null;  
     for (let i = 0; i < topics.length; i++){
       console.log(topics[i].id, id);
@@ -110,7 +122,7 @@ function App() {
         }
       }
       content = <Article first={first} last={last}></Article>
-    }else if (mode === 'CREATE') {
+  }else if (mode === 'CREATE') {
       content = <Create onCreate={(_title, _body) => {
         const newTopic = {id:nextId, title:_title, body:_body};
         // topics.push(newTopic);
@@ -145,7 +157,6 @@ function App() {
       setMode('READ');
     }}></Update>
   }
- 
   return (
     <div className="App"> 
       <Header title="Bread Barbor Shop" onChangeMode={(e) => {
