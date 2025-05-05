@@ -38,6 +38,22 @@ function Article(props) {
   </article>
 } 
 
+function Create(props) {
+  return <article>
+    <h2>Create</h2>
+    <form onSubmit={e=>{
+      e.preventDefault();
+      const title = e.target.title.value;
+      const body = e.target.body.value;
+      props.onCreate(title, body);
+    }}>
+      <p><input type="text" name="title" placeholder='title'/></p>
+      <p><textarea name="body" placeholder='body'></textarea></p>
+      <p><input type="submit" value="Create"></input></p>
+    </form>
+  </article>
+}
+
 function App() {
   // const _mode = useState('Hello');
   // const mode = _mode[0];
@@ -45,38 +61,56 @@ function App() {
 
   const [mode, setMode] = useState('Hello');
   const [id, setId] = useState(null); // 초기값 없음
-  let content = null;
-  const topics =[
+  const [nextId, setNextId] = useState(4);
+  const [topics, setTopics] = useState([
     {id:1 , title:'tom', body:'ethan'},
     {id:2 , title:'simon', body:'benji'},
     {id:3 , title:'rebecca', body:'ilsa'}
-  ];
-  if (mode === 'Hello') {
+  ]);
+  let content = null;
+  if (mode === 'HELLO') {
       content = <Article first="Tom" last="cruise"></Article>
-  }else if(mode === 'Wolrd'){
+  }else if(mode === 'READ'){
     let first, last = null;  
     for (let i = 0; i < topics.length; i++){
       console.log(topics[i].id, id);
-        if (topics[i].id == id) {
+        if (topics[i].id === id) {
           first = topics[i].title;
           last = topics[i].body;
         }
       }
       content = <Article first={first} last={last}></Article>
+    }else if (mode === 'CREATE') {
+      content = <Create onCreate={(_title, _body) => {
+        const newTopic = {id:nextId, title:_title, body:_body};
+        // topics.push(newTopic);
+        // setTopics(topics);        -- 원시타입이 아닌 객체는 해당 방식으로 컴포넌트를 리로드(다시 렌더링) 할 수 없음
+
+        const newTopics = [...topics]
+        newTopics.push(newTopic);
+        setTopics(newTopics);
+        setMode('READ');
+        setId(nextId);
+        setNextId(nextId+1);
+      }}></Create>
   }
  
   return (
     <div className="App"> 
       <Header title="Bread Barbor Shop" onChangeMode={(e) => {
         alert('조심 또 조심!');
-        setMode('Hello');        
+        setMode('HELLO');        
       }}></Header>
       <Nav topics={topics} onChangeMode={(_id) => {
         alert(id);
-        setMode('Wolrd');
+        setMode('READ');
         setId(_id); 
       }}></Nav>
         {content}
+        <a href="/create" onClick={e => {
+          e.preventDefault();
+          setMode('CREATE');
+        }}>Create</a>
     </div>
   );
 }
