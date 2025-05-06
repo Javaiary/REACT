@@ -1,21 +1,15 @@
-"use client"
-import { useEffect, useState } from "react";
 import "./globals.css";
 import Link from 'next/link';
 
 
-// export const metadata = {
-//   title: "Web Tutorials",
-//   description: "go go nextapp",
-// };
+export const metadata = {
+  title: "Web Tutorials",
+  description: "go go nextapp",
+};
 
-export default function RootLayout({ children }) {
-  const [topics, setTopics] = useState([]);
-  useEffect(()=> {
-    fetch('http://localhost:9999/topics').then(resp => resp.json()).then(result => {
-      setTopics(result);
-    });
-  }, []);
+export default async function RootLayout({ children }) {
+    const resp = await fetch('http://localhost:9999/topics');
+    const topics = await resp.json();
   return (
       <html>
         <body>
