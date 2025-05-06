@@ -2,14 +2,13 @@ import "./globals.css";
 import Link from 'next/link';
 import {Control} from './Control';
 
-
 export const metadata = {
   title: "Web Tutorials",
   description: "go go nextapp",
 };
 
 export default async function RootLayout({ children }) {
-    const resp = await fetch(`http://localhost:9999/topics`, {next: 'no-store'});
+    const resp = await fetch(process.env.NEXT_PUBLIC_DB_API_URL+'topics', {next: 'no-store'});
     const topics = await resp.json();
   return (
       <html>
