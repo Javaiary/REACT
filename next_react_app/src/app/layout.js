@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-    const resp = await fetch('http://localhost:9999/topics');
+    const resp = await fetch(`http://localhost:9999/topics`, {next: 'no-store'});
     const topics = await resp.json();
   return (
       <html>
@@ -16,7 +16,7 @@ export default async function RootLayout({ children }) {
           <h1><Link href="/">WEB</Link></h1>
           <ol>
             {topics.map((topic) => {
-              return <li><Link href={`/read/${topic.id}`}>{topic.title}</Link></li>
+              return <li key={topic.id}><Link href={`/read/${topic.id}`}>{topic.title}</Link></li>
             })}
           </ol>
           {children}
